@@ -1,5 +1,9 @@
 (function($){
-
+    /* SLIDE NAV
+    LEFT, RIGHT
+    2DETH
+    CSS keyframe
+    */
     $.jjSlideNav = function(element, options){
 
         var options = $.extend({}, $.jjSlideNav.defaults, options);
@@ -7,7 +11,7 @@
 
         var self = this;
         var $el = $(element);
-        var elementId = '#'+$el.attr("id");
+        var elementId = '#'+$el.attr('id');
         var bodyH = $(document).height();
 
         init();
@@ -15,18 +19,18 @@
         // event
         $('body').on('click', 'a[href="'+ elementId +'"]', function(e){
 
-            var direction = $el.attr("data-slide-positon") || 'left';
+            var direction = $el.attr('data-slide-positon') || 'left';
 
             switch(direction){
                 case 'left' :
-                    if($el.hasClass(options.activeLeftClass)){
+                    if($el.hasClass(options.LeftOpenClass)){
                         self.close();
                     } else {
                         self.openLeft();
                     }
                     break;
                 case 'right' :
-                    if($el.hasClass(options.activeRightClass)){
+                    if($el.hasClass(options.RightOpenClass)){
                         self.close();
                     } else {
                         self.openRight();
@@ -37,50 +41,61 @@
             e.preventDefault();
         });
 
-
         $('body').on('click', '.'+options.screenBg, function(e){
             self.close();
             e.preventDefault();
         });
 
         self.close = function(){
-
+            if($el.hasClass(options.LeftOpenClass)){
+                $el.addClass(options.LeftCloseClass);
+            } else {
+                $el.addClass(options.RightCloseClass);
+            }
             $('.'+options.screenBg).hide();
-            $el.removeClass(options.activeLeftClass);
-            $el.removeClass(options.activeRightClass);
-            console.log("close");
+            $el.removeClass(options.LeftOpenClass);
+            $el.removeClass(options.RightOpenClass);
+
+            console.log('close');
         };
 
         self.openLeft = function(){
+            $el.removeClass(options.LeftCloseClass);
+            $el.removeClass(options.RightCloseClass);
 
-            $el.addClass(options.activeLeftClass);
+            $el.addClass(options.LeftOpenClass);
             $('.'+options.screenBg).show();
-            console.log("openLeft");
+
+            console.log('openLeft');
         };
 
         self.openRight = function(){
-            $el.show();
-            $el.addClass(options.activeRightClass);
+            $el.removeClass(options.LeftCloseClass);
+            $el.removeClass(options.RightCloseClass);
+
+            $el.addClass(options.RightOpenClass);
             $('.'+options.screenBg).show();
-            console.log("openRight");
+
+            console.log('openRight');
         };
 
         function init(){
-            $el.css("height", bodyH);
-            $el.after($("<div/>",{
+            $el.css('height', bodyH);
+            $el.after($('<div/>',{
                     'class':options.screenBg,
                 })
             );
-            $('.'+options.screenBg).css("height", bodyH);
+            $('.'+options.screenBg).css('height', bodyH);
         };
-
 
     };
 
     /* defaults optipon */
     $.jjSlideNav.defaults = {
-        activeLeftClass: 'left-open',
-        activeRightClass: 'right-open',
+        LeftOpenClass: 'left-open',
+        RightOpenClass: 'right-open',
+        LeftCloseClass: 'left-close',
+        RightCloseClass: 'right-close',
         screenBg: 'back-screen'
     };
 
@@ -90,12 +105,6 @@
             var element = $(this);
             var jjSlideNav = new $.jjSlideNav(this, options);
             element.data('jjSlideNav', jjSlideNav);
-            /*
-            if (!$.data(this, 'jjSlideNav')) {
-                $.data(this, 'jjSlideNav', new $.jjSlideNav(element, options));
-            }
-            */
-
         });
     };
 
@@ -103,12 +112,26 @@
 
 
 
-
 $(function(){
     // 플러그인의 defaults 값을 외부에서 변경할 수 있다.
-    //$.fn.jjSlideNav.defaults.active = '';
+    //$.fn.jjSlideNav.defaults. = '';
 
     // 사용자 정의의 옵션값을 정의하여 플러그인 메소드를 호출한다.
-    var slidenav = new $("#menu").jjSlideNav({});
-    var slidenav2 = new $("#menu2").jjSlideNav({});
+    // slide nav
+    var slidenav = new $('#menu').jjSlideNav({});
+
+    // slider
+    $(".slider ol").bxSlider({
+        auto: true,
+        pause: $('.slider').attr('data-delay'),
+        controls: false,
+        onSliderLoad : function(){
+            var pagingPosition = $(".slider").attr("data-paging-position");
+
+            if(pagingPosition != undefined){
+                $('.slider').find('.bx-pager').css('bottom', pagingPosition+'px');
+            }
+        }
+    });
+
 });
